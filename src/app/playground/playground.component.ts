@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import * as d3 from 'd3';
 import * as $ from 'jquery';
 
@@ -13,7 +13,8 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
   linkTextElements: any;
   linkElements: any;
   nodeElements: any;
-  selected = null;
+  selected: any;
+  @Output() nodeSelected = new EventEmitter();
   notify: ((tag: string) => void);
   nodes: any;
   links: any;
@@ -37,13 +38,13 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
     const WIDTH = wrapper.width();
     const HEIGHT = Math.max(sibling.height(), 500);
     const RADIUS = 40;
+    let self = this;
 
-    this.svg = d3.select('#playground');
-    this.svg
+    self.svg = d3.select('#playground');
+    self.svg
       .attr('transform-origin', '75 240')
       .attr('width', `${WIDTH}`)
       .attr('height', `${HEIGHT}`);
-    let self = this;
     let simulation =
       d3.forceSimulation(this.nodes)
         .force('linkElements', d3.forceLink().id((d: any) => d.id).distance(5 * RADIUS))
@@ -68,7 +69,6 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       .attr('stroke', '#ffb4aa')
       .on('click', (d) => {
         console.debug(d);
-        console.log('fucking click!!!');
         this.selected = d;
       });
 
@@ -81,9 +81,7 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       .style('font-size', '12px')
       .on('click', (d) => {
         console.debug('click shit:' + d);
-        this.selected = {
-          'label': 'fuck'
-        };
+        this.selected = { 'label': 'fuck' };
       });
 
 
@@ -98,7 +96,10 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       .classed('leaf', (d) => !d.children || d.children.length === 0)
       .attr('r', RADIUS)
       .attr('fill', d => d3.color(d.group))
-      .on('click', self.node_click)
+      .on('click', (d) => {
+        self.selected = d;
+        self.nodeSelected.emit(d);
+      })
       .on('dblclick', (d) => {
         if (d.children != null) {
           this.selected = d;
@@ -160,11 +161,6 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       });
   }
 
-  node_click(d) {
-    console.debug(d);
-    // TODO: AJAX HERE
-    this.selected = d;
-  }
 
   set(nodes: any[], links: any[]) {
     this.nodes = nodes;
@@ -174,5 +170,4 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
   ngOnInit() {
 
   }
-
 }

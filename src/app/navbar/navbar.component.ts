@@ -8,15 +8,15 @@ import {PlaygroundComponent} from "../playground/playground.component";
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
-  
+
   breadcrumbs: string[] = [];
   configs: any[] = [];
   playground: PlaygroundComponent;
-  
+
   constructor() {
-  
+
   }
-  
+
   init(playground: PlaygroundComponent, initialConfig: any) {
     let self = this;
     this.playground = playground;
@@ -26,22 +26,22 @@ export class NavbarComponent implements OnInit {
       self.configs.push(tag.children);
       self.draw();
     };
-    
+
     this.breadcrumbs.push('TOP');
     this.configs.push(initialConfig);
     this.draw();
   }
-  
-  
+
+
   draw() {
     console.debug(this.configs);
     this.playground.clear();
     let lastOffset = this.configs.length - 1;
     this.playground.nodes = this.configs[lastOffset].nodes;
-    this.playground.links = this.configs[lastOffset].links==null?[]:this.configs[lastOffset].links;
+    this.playground.links = this.configs[lastOffset].links == null ? [] : this.configs[lastOffset].links;
     this.playground.draw();
   }
-  
+
   back(i: number) {
     if (i === this.breadcrumbs.length - 1) return;
     console.debug(this.configs);
@@ -50,12 +50,12 @@ export class NavbarComponent implements OnInit {
     this.breadcrumbs = this.breadcrumbs.slice(0, i + 1);
     this.draw();
   }
-  
+
   append(tag: string) {
     this.breadcrumbs.push(tag);
   }
-  
+
   ngOnInit() {
   }
-  
+
 }

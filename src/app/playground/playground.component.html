@@ -8,14 +8,6 @@
           <th>设备ID</th>
           <td>{{selected.id}}</td>
         </tr>
-        <tr>
-          <th>类型</th>
-          <td>{{selected.label}}</td>
-        </tr>
-        <tr *ngFor="let key of selected.attrs.keys()">
-        <th>{{key}}</th>
-        <td>{{selected.attrs.get(key)}}</td>
-        </tr>
 
       </table>
       <button [hidden]="!selected.children" class="btn btn-primary float-right" (click)="drill(selected);">

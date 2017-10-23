@@ -1,22 +1,9 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import * as d3 from 'd3';
 import * as $ from 'jquery';
 
 const HEIGHT = 255;
 const DURATION = 1000;
-const TEST_DATA = {
-  "name": "Top Level",
-  "children": [
-    {
-      "name": "Level 2: A",
-      "children": [
-        {"name": "Son of A"},
-        {"name": "Daughter of A"}
-      ]
-    },
-    {"name": "Level 2: B"}
-  ]
-};
 const MARGIN = {top: 20, right: 90, bottom: 30, left: 90};
 
 function collapse(d) {
@@ -46,6 +33,8 @@ export class TreeComponent implements OnInit, AfterViewInit {
   treeMap: any;
   root: any;
   i = 0;
+  originData: any;
+
 
   constructor() {
   }
@@ -53,38 +42,48 @@ export class TreeComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
+
   ngAfterViewInit() {
-    let self = this;
-    self.width = $('#standard-width').width() - MARGIN.left - MARGIN.right;
-    self.height = HEIGHT - MARGIN.bottom - MARGIN.top;
-    self.svg =
+    this.initFrame();
+  }
+
+  private initFrame() {
+    console.log("tree frame init");
+    if (this.svg) {
+      this.svg.remove();
+      this.svg = null;
+    }
+    this.width = $('#standard-width').width() - MARGIN.left - MARGIN.right;
+    this.height = HEIGHT - MARGIN.bottom - MARGIN.top;
+    this.svg =
       d3.select('#app-tree-svg')
-        .attr('width', self.width + MARGIN.left + MARGIN.right)
-        .attr('height', self.height + MARGIN.top + MARGIN.bottom)
+        .attr('width', this.width + MARGIN.left + MARGIN.right)
+        .attr('height', this.height + MARGIN.top + MARGIN.bottom)
         .append('g')
         .attr('transform', `translate(${MARGIN.left}, ${MARGIN.top})`);
+  }
 
+
+
+  init(data) {
+    console.log("tree init");
+    let self = this;
+    self.initFrame();
+
+    self.originData = data;
     self.treeMap = d3.tree().size([HEIGHT, this.width]);
-    self.root = d3.hierarchy(TEST_DATA, (d: any) => d.children);
+    console.debug(self.originData);
+    self.root = d3.hierarchy(self.originData, (d: any) => d.children);
     self.root.x0 = HEIGHT / 2;
     self.root.y0 = 0;
+    console.debug(self.root);
     self.root.children.forEach(collapse);
     self.update(self.root);
   }
 
-  update(source) {
+  private updateNodes(source, nodesData) {
     let self = this;
-    let treeData = self.treeMap(self.root);
-    let
-      nodesData = treeData.descendants(),
-      linksData = treeData.descendants().slice(1);
-
     nodesData.forEach(d => d.y = d.depth * 180);
-
-    // nodes part
-    //
-    //
-
     let nodes = self.svg.selectAll('g.node')
       .data(nodesData, d => (d.id || (d.id = ++self.i)));
 
@@ -114,6 +113,7 @@ export class TreeComponent implements OnInit, AfterViewInit {
       .style('fill', d => d._children ? "green" : "#fff");
 
     nodesEnter.append('text')
+      .classed('node-text-glow', true)
       .attr('dy', '.35em')
       .attr('x', d => (d.children || d._children ? -13 : 13))
       .attr('text-anchor', d => (d.children || d._children ? "end" : "start"))
@@ -122,7 +122,7 @@ export class TreeComponent implements OnInit, AfterViewInit {
       .text(d => d.data.name);
 
     nodesEnter.append('text')
-      .attr('dy', '.35em')
+      .classed('node-text', true)
       .attr('x', d => (d.children || d._children ? -13 : 13))
       .attr('text-anchor', d => (d.children || d._children ? "end" : "start"))
       .text(d => d.data.name);
@@ -146,14 +146,9 @@ export class TreeComponent implements OnInit, AfterViewInit {
 
     nodesExit.select('circle').attr('r', 1e-6);
     nodesExit.select('text').style('fill-opacity', 1e-6);
+  }
 
-    // nodes part end
-    //
-    //
-
-    // links part
-    //
-    //
+  private updateLinks(source, linksData) {
     let links = this.svg.selectAll('path.link').data(linksData, d => d.id);
     console.debug(links);
     let linksEnter = links.enter().insert('path', 'g')
@@ -165,23 +160,30 @@ export class TreeComponent implements OnInit, AfterViewInit {
         let o = {x: source.x0, y: source.y0};
         return diagonal(o, o);
       });
-    // UPDATE
     let linksUpdate = linksEnter.merge(links);
+
     // back to parent element position
     linksUpdate.transition()
       .duration(DURATION)
       .attr('d', d => diagonal(d, d.parent));
 
-    let linksExit = links.exit().transition()
+    links.exit().transition()
       .duration(DURATION)
       .attr('d', (d) => {
         let o = {x: source.x, y: source.y};
         return diagonal(o, o);
       }).remove();
-    // links part end
-    //
-    //
+  }
 
+  update(source) {
+    let self = this;
+    let treeData = self.treeMap(self.root);
+    let
+      nodesData = treeData.descendants(),
+      linksData = treeData.descendants().slice(1);
+
+    self.updateNodes(source, nodesData);
+    self.updateLinks(source, linksData);
   }
 
 }
