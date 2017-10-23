@@ -1,0 +1,26 @@
+/* You can add global styles to this file, and also import other style files */
+$font-family-sans-serif: '思源宋体' !default;
+$font-family-monospace: '思源宋体' !default;
+$font-family-base: '思源宋体' !default;
+
+@import "~bootstrap/scss/bootstrap";
+
+text {
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.can-drill {
+  stroke-width: 5px;
+  stroke: #dee2e6;
+}
+
+.leaf {
+  stroke-width: 2px;
+  stroke: #ffec99;
+}
+
+#copyright {
+  padding-top: 5px;
+  padding-right: 5px;
+}
