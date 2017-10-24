@@ -1,10 +1,10 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import * as d3 from 'd3';
 import * as $ from 'jquery';
 
-const HEIGHT = 255;
+const HEIGHT = 400;
 const DURATION = 1000;
-const MARGIN = {top: 20, right: 90, bottom: 30, left: 90};
+const MARGIN = {top: 5, right: 100, bottom: 5, left: 90};
 
 function collapse(d) {
   if (d.children) {
@@ -55,14 +55,23 @@ export class TreeComponent implements OnInit, AfterViewInit {
     }
     this.width = $('#standard-width').width() - MARGIN.left - MARGIN.right;
     this.height = HEIGHT - MARGIN.bottom - MARGIN.top;
+    let self = this;
     this.svg =
       d3.select('#app-tree-svg')
         .attr('width', this.width + MARGIN.left + MARGIN.right)
         .attr('height', this.height + MARGIN.top + MARGIN.bottom)
         .append('g')
         .attr('transform', `translate(${MARGIN.left}, ${MARGIN.top})`);
-  }
 
+    let zoomConstraint = d3.zoom()
+      .scaleExtent([1, 100])
+      .on("zoom", () => {
+        self.svg.attr(
+          'transform',
+          `translate(${d3.event.transform.x}, ${d3.event.transform.y}) scale(${d3.event.transform.k})`);
+      });
+    this.svg.call(zoomConstraint);
+  }
 
 
   init(data) {
@@ -145,7 +154,8 @@ export class TreeComponent implements OnInit, AfterViewInit {
       .remove();
 
     nodesExit.select('circle').attr('r', 1e-6);
-    nodesExit.select('text').style('fill-opacity', 1e-6);
+    nodesExit.select('.node-text').attr('fill-opacity', 1e-6);
+    nodesExit.select('.node-text-glow').attr('fill-opacity', 1e-6);
   }
 
   private updateLinks(source, linksData) {

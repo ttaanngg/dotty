@@ -105,7 +105,7 @@ export function translate(raw: RawConfig): Config {
   let memo: Map<string, Config> = new Map<string, Config>();
   memo.set('', config);
   for (let rawDevice of raw.devices) nodeFinder(rawDevice, config, memo);
-  
+
   console.debug(memo);
   for (let connection of rawConfig.connections) {
     // console.log(connection);
@@ -116,7 +116,6 @@ export function translate(raw: RawConfig): Config {
       if (fromSegs[i] === toSegs[i]) {
         path = concat(path, fromSegs[i]);
       } else {
-        // console.log(`'${path}'`);
         let source = concat(path, fromSegs[i]);
         let target = concat(path, toSegs[i]);
         console.log(source);

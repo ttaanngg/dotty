@@ -3,7 +3,10 @@
   <small id="copyright" class="text-muted float-right">@ttaanngg</small>
   <app-navbar #nav></app-navbar>
   <div class="row">
-    <app-playground #playground class="col-sm-12" (nodeSelected)="plotTree($event)"></app-playground>
+    <app-playground #playground class="col-sm-12"
+                    (nodeSelected)="tree.init(this.treeFlat($event))"
+                    (drillInvoke)="nav.forward($event)">
+    </app-playground>
   </div>
   <hr id="standard-width">
   <div class="row">

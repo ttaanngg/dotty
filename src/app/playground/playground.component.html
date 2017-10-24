@@ -8,11 +8,14 @@
           <th>设备ID</th>
           <td>{{selected.id}}</td>
         </tr>
-
       </table>
-      <button [hidden]="!selected.children" class="btn btn-primary float-right" (click)="drill(selected);">
+
+      <button [hidden]="!selected.children"
+              class="btn btn-primary float-right"
+              (click)="drillInvoke.emit(selected)">
         下钻
       </button>
+
     </div>
   </div>
   <div id="playground-wrapper" class="col-sm-9">

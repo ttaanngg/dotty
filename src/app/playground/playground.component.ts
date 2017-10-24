@@ -9,13 +9,14 @@ import * as $ from 'jquery';
 })
 export class PlaygroundComponent implements OnInit, AfterViewInit {
 
+  @Output() nodeSelected = new EventEmitter();
+  @Output() drillInvoke = new EventEmitter();
+
   svg: any;
   linkTextElements: any;
   linkElements: any;
   nodeElements: any;
   selected: any;
-  @Output() nodeSelected = new EventEmitter();
-  notify: ((tag: string) => void);
   nodes: any;
   links: any;
 
@@ -23,7 +24,7 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
   }
 
   clear() {
-    if (this.svg != null) this.svg.html("");
+    if (this.svg != null) this.svg.remove();
     this.selected = null;
     this.nodes = null;
     this.links = null;
@@ -33,18 +34,18 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
 
 
   draw() {
-    const wrapper = $('#playground-wrapper');
-    const sibling = $('#info-panel');
-    const WIDTH = wrapper.width();
-    const HEIGHT = Math.max(sibling.height(), 500);
-    const RADIUS = 40;
+    let wrapper = $('#playground-wrapper');
+    let sibling = $('#info-panel');
+    let WIDTH = wrapper.width();
+    let HEIGHT = Math.max(sibling.height(), 500);
+    let RADIUS = 40;
     let self = this;
 
-    self.svg = d3.select('#playground');
-    self.svg
+    self.svg = d3.select('#playground')
       .attr('transform-origin', '75 240')
       .attr('width', `${WIDTH}`)
-      .attr('height', `${HEIGHT}`);
+      .attr('height', `${HEIGHT}`).append('g');
+
     let simulation =
       d3.forceSimulation(this.nodes)
         .force('linkElements', d3.forceLink().id((d: any) => d.id).distance(5 * RADIUS))
@@ -65,8 +66,7 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
 
     this.linkElements = linkWrappers
       .append('line')
-      .attr('stroke-width', 8)
-      .attr('stroke', '#ffb4aa')
+      .classed('playground-line', true)
       .on('click', (d) => {
         console.debug(d);
         this.selected = d;
@@ -74,25 +74,25 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
 
     this.linkTextElements = linkWrappers
       .append('text')
+      .classed('playground-link-text', true)
       .attr('x', d => d.source.x)
       .attr('y', d => d.source.y)
-      .attr('text-anchor', 'middle')
       .text(d => d.label)
-      .style('font-size', '12px')
       .on('click', (d) => {
         console.debug('click shit:' + d);
-        this.selected = { 'label': 'fuck' };
+        this.selected = {'label': 'fuck'};
       });
 
 
     this.nodeElements =
       this.svg.append('g')
-        .attr('class', 'nodes').selectAll('g').data(this.nodes)
-        .enter()
-        .append('g').attr('transform', `translate(${WIDTH / 2}, ${HEIGHT / 2})`);
+        .attr('class', 'nodes')
+        .selectAll('g').data(this.nodes)
+        .enter().append('g')
+        .attr('transform', `translate(${WIDTH / 2}, ${HEIGHT / 2})`);
 
     this.nodeElements.append('circle')
-      .classed('can-drill', (d) => d.children && d.children.length !== 0)
+      .classed('can-forward', (d) => d.children && d.children.length !== 0)
       .classed('leaf', (d) => !d.children || d.children.length === 0)
       .attr('r', RADIUS)
       .attr('fill', d => d3.color(d.group))
@@ -102,9 +102,8 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       })
       .on('dblclick', (d) => {
         if (d.children != null) {
-          this.selected = d;
-          console.debug(d);
-          this.notify(d);
+          self.selected = d;
+          self.drillInvoke.emit(d);
         }
       })
       .call(d3.drag().on('start', (d: any) => {
@@ -139,12 +138,8 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
   }
 
 
-  drill(tag: any) {
-    this.notify(tag);
-  }
 
   ticked() {
-
     this.linkElements
       .attr('x1', d => d.source.x)
       .attr('y1', d => d.source.y)
@@ -161,11 +156,6 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       });
   }
 
-
-  set(nodes: any[], links: any[]) {
-    this.nodes = nodes;
-    this.links = links;
-  }
 
   ngOnInit() {
 
