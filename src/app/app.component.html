@@ -1,11 +1,14 @@
 <div id="main-body" class="container-fluid">
   <h2 id="heading">{{title}}</h2>
   <small id="copyright" class="text-muted float-right">@ttaanngg</small>
-  <app-navbar #nav></app-navbar>
-  <div class="row">
-    <app-playground #playground class="col-sm-12"
-                    (nodeSelected)="tree.init(this.treeFlat($event))"
-                    (drillInvoke)="nav.forward($event)">
+  <app-navbar #nav (updateEvent)="back($event)"></app-navbar>
+  <div class="row" style="margin-top: 10px">
+    <app-inspector #inspector id="info-panel" class="col-sm-3"
+                   (drill)="drill($event)">
+    </app-inspector>
+    <app-playground #playground class="col-sm-9"
+                    (selected)="this.handleSelected($event)"
+                    (drill)="drill($event)">
     </app-playground>
   </div>
   <hr id="standard-width">
@@ -13,4 +16,3 @@
     <app-tree #tree class="col-sm-12"></app-tree>
   </div>
 </div>
-

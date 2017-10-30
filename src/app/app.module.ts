@@ -6,13 +6,15 @@ import {PlaygroundComponent} from './playground/playground.component';
 import {NavbarComponent} from './navbar/navbar.component';
 import {Http, HttpModule} from "@angular/http";
 import { TreeComponent } from './tree/tree.component';
+import { InspectorComponent } from './inspector/inspector.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PlaygroundComponent,
     NavbarComponent,
-    TreeComponent
+    TreeComponent,
+    InspectorComponent
   ],
   imports: [
     BrowserModule,

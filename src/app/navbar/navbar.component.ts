@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {PlaygroundComponent} from "../playground/playground.component";
+import {Component, EventEmitter, Output} from '@angular/core';
+import {NodeType} from "../configs";
 
 
 @Component({
@@ -9,43 +9,37 @@ import {PlaygroundComponent} from "../playground/playground.component";
 })
 export class NavbarComponent {
 
-  breadcrumbs: string[] = [];
-  configs: any[] = [];
-  playground: PlaygroundComponent;
+  configs: NodeType[] = [];
+  @Output() updateEvent = new EventEmitter();
 
   constructor() {
 
   }
 
-  init(playground: PlaygroundComponent, initialConfig: any) {
-    this.playground = playground;
-    this.breadcrumbs.push('TOP');
-    this.configs.push(initialConfig);
-    this.invokePlayground();
+  lastConfig(): any {
+    return this.configs[this.configs.length - 1];
   }
 
-  private append(tag: any) {
-    this.breadcrumbs.push(tag.id);
-    this.configs.push(tag.children);
+  init(top: NodeType) {
+    this.configs.push(top);
+    this.setup(0);
   }
 
-  forward(tag: any) {
-    this.append(tag);
-    this.invokePlayground();
+  private append(node: NodeType) {
+    this.configs.push(node);
   }
 
-  invokePlayground() {
-    this.playground.clear();
-    let lastOffset = this.configs.length - 1;
-    this.playground.nodes = this.configs[lastOffset].nodes;
-    this.playground.links = this.configs[lastOffset].links == null ? [] : this.configs[lastOffset].links;
-    this.playground.draw();
+  forward(node: NodeType) {
+    this.append(node);
   }
 
-  back(i: number) {
-    if (i === this.breadcrumbs.length - 1) return;
+  private setup(i: number) {
     this.configs = this.configs.slice(0, i + 1);
-    this.breadcrumbs = this.breadcrumbs.slice(0, i + 1);
-    this.invokePlayground();
+    this.updateEvent.emit(this.lastConfig());
+  }
+
+  update(i: number) {
+    if (i === this.configs.length - 1) return;
+    this.setup(i);
   }
 }

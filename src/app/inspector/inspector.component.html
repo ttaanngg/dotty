@@ -1,0 +1,21 @@
+<h4 id="info-panel-heading">{{ (selected&&selected.id)?"节点信息":"连接信息" }}</h4>
+<hr>
+<div>
+
+</div>
+<div *ngIf="this.selected">
+  <table class="table table-hover table-bordered">
+    <tr *ngIf="this.selected.id">
+      <th>设备ID</th>
+      <td>{{selected.id}}</td>
+    </tr>
+  </table>
+  <button [hidden]="!selected.children"
+          class="btn btn-primary float-right"
+          (click)="drill.emit(selected)">
+    下钻
+  </button>
+</div>
+<div *ngIf="!this.selected">
+  <p>选中节点来查看属性</p>
+</div>

@@ -1,12 +1,12 @@
 import {rawConfig, RawConfig, RawDevice} from "./raw.config";
 import {json} from "d3-request";
 
-class Config {
-  nodes: Node[] = [];
-  links?: Link[] = [];
+export class Config {
+  nodes: NodeType[] = [];
+  links?: LinkType[] = [];
 }
 
-class Link {
+export class LinkType {
   label: string;
   source: string | number;
   target: string | number;
@@ -14,7 +14,7 @@ class Link {
   attrs?: {};
 }
 
-class Node {
+export class NodeType {
   id: string | number;
   label: string;
   group: string;
@@ -80,7 +80,7 @@ export let originalData: Config = {
 
 function nodeFinder(rawDevice: RawDevice, config: Config, memo: Map<string, Config>, pre: string = null): void {
   let id = pre === null ? rawDevice.id : `${pre}.${rawDevice.id}`;
-  let node: Node = {
+  let node: NodeType = {
     'id': id,
     'label': rawDevice.type,
     'group': '#91a7ff',
@@ -100,7 +100,7 @@ function concat(pre, cur): string {
   return pre === '' ? cur : pre + '.' + cur;
 }
 
-export function translate(raw: RawConfig): Config {
+export function translate(raw: RawConfig): NodeType {
   let config = new Config();
   let memo: Map<string, Config> = new Map<string, Config>();
   memo.set('', config);
@@ -118,8 +118,6 @@ export function translate(raw: RawConfig): Config {
       } else {
         let source = concat(path, fromSegs[i]);
         let target = concat(path, toSegs[i]);
-        console.log(source);
-        console.log(target);
         if (!memo.get(source).links) memo.get(source).links = [];
         memo.get(source).links.push({
           'source': source,
@@ -131,8 +129,14 @@ export function translate(raw: RawConfig): Config {
       }
     }
   }
-  console.debug(memo);
-  return config;
+  console.debug(config);
+  let top: NodeType = {
+    id: 'TOP',
+    label: 'TOP',
+    children: config,
+    group: '#fff'
+  };
+  return top;
 }
 
 

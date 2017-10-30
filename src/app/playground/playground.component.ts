@@ -1,39 +1,37 @@
-import {AfterViewInit, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import * as d3 from 'd3';
 import * as $ from 'jquery';
+import {NodeType} from "../configs";
 
 @Component({
   selector: 'app-playground',
   templateUrl: './playground.component.html',
   styleUrls: ['./playground.component.scss']
 })
-export class PlaygroundComponent implements OnInit, AfterViewInit {
+export class PlaygroundComponent implements OnInit {
 
-  @Output() nodeSelected = new EventEmitter();
-  @Output() drillInvoke = new EventEmitter();
+  @Output() selected = new EventEmitter();
+  @Output() drill = new EventEmitter();
 
   svg: any;
   linkTextElements: any;
   linkElements: any;
   nodeElements: any;
-  selected: any;
-  nodes: any;
-  links: any;
+
+  selectedNode: NodeType;
 
   constructor() {
   }
 
-  clear() {
+  flush() {
     if (this.svg != null) this.svg.remove();
-    this.selected = null;
-    this.nodes = null;
-    this.links = null;
+    this.selectedNode = null;
     this.linkElements = null;
     this.nodeElements = null;
   }
 
 
-  draw() {
+  draw(topo: NodeType) {
     let wrapper = $('#playground-wrapper');
     let sibling = $('#info-panel');
     let WIDTH = wrapper.width();
@@ -47,7 +45,7 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       .attr('height', `${HEIGHT}`).append('g');
 
     let simulation =
-      d3.forceSimulation(this.nodes)
+      d3.forceSimulation(topo.children.nodes)
         .force('linkElements', d3.forceLink().id((d: any) => d.id).distance(5 * RADIUS))
         .force("collide", d3.forceCollide(RADIUS * 2).iterations(16))
         .force('charge', d3.forceManyBody())
@@ -59,7 +57,7 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
     let linkWrappers = this.svg.append('g')
       .attr('class', 'links')
       .selectAll('g')
-      .data(this.links)
+      .data(topo.children.links)
       .enter()
       .append('g');
 
@@ -69,7 +67,7 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       .classed('playground-line', true)
       .on('click', (d) => {
         console.debug(d);
-        this.selected = d;
+        this.selectedNode = d;
       });
 
     this.linkTextElements = linkWrappers
@@ -80,14 +78,14 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       .text(d => d.label)
       .on('click', (d) => {
         console.debug('click shit:' + d);
-        this.selected = {'label': 'fuck'};
+        // this.selectedNode = {'label': 'fuck'};
       });
 
 
     this.nodeElements =
       this.svg.append('g')
         .attr('class', 'nodes')
-        .selectAll('g').data(this.nodes)
+        .selectAll('g').data(topo.children.nodes)
         .enter().append('g')
         .attr('transform', `translate(${WIDTH / 2}, ${HEIGHT / 2})`);
 
@@ -97,13 +95,13 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       .attr('r', RADIUS)
       .attr('fill', d => d3.color(d.group))
       .on('click', (d) => {
-        self.selected = d;
-        self.nodeSelected.emit(d);
+        self.selectedNode = d;
+        self.selected.emit(d);
       })
       .on('dblclick', (d) => {
         if (d.children != null) {
-          self.selected = d;
-          self.drillInvoke.emit(d);
+          self.selectedNode = d;
+          self.drill.emit(d);
         }
       })
       .call(d3.drag().on('start', (d: any) => {
@@ -127,16 +125,12 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
 
 
     simulation
-      .nodes(this.nodes)
+      .nodes(topo.children.nodes)
       .on('tick', () => this.ticked());
 
-    (<d3.ForceLink<any, any>>(simulation.force('linkElements'))).links(this.links);
+    (<d3.ForceLink<any, any>>(simulation.force('linkElements'))).links(topo.children.links);
 
   }
-
-  ngAfterViewInit() {
-  }
-
 
 
   ticked() {
@@ -156,6 +150,10 @@ export class PlaygroundComponent implements OnInit, AfterViewInit {
       });
   }
 
+  setTopo(topo: NodeType) {
+    this.flush();
+    this.draw(topo);
+  }
 
   ngOnInit() {
 

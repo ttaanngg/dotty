@@ -1,10 +1,11 @@
-import {AfterViewInit, Component, isDevMode, OnInit, ViewChild} from '@angular/core';
+import {Component, isDevMode, OnInit, ViewChild} from '@angular/core';
 import {PlaygroundComponent} from './playground/playground.component';
 import {NavbarComponent} from "./navbar/navbar.component";
 import {Http} from "@angular/http";
 import "rxjs/add/operator/map";
-import {connectData} from "./configs";
+import {connectData, translate} from "./configs";
 import {TreeComponent} from "./tree/tree.component";
+import {InspectorComponent} from "./inspector/inspector.component";
 
 @Component({
   selector: 'app-root',
@@ -16,18 +17,19 @@ export class AppComponent implements OnInit {
   @ViewChild(NavbarComponent) nav: NavbarComponent;
   @ViewChild(PlaygroundComponent) playground: PlaygroundComponent;
   @ViewChild(TreeComponent) tree: TreeComponent;
+  @ViewChild(InspectorComponent) inspector: InspectorComponent;
 
   ngOnInit() {
     if (isDevMode()) {
       alert('Dev Mode');
-      this.nav.init(this.playground, connectData);
+      this.nav.init(connectData);
     } else {
       let location = window.location;
       let topoID = location.pathname.split('/').pop();
       let retrievePath = `//${location.host}/retrieve/${topoID}`;
       this.http.get(retrievePath)
         .subscribe((data) => {
-          this.nav.init(this.playground, data);
+          this.nav.init(translate(data.json()));
         }, (err) => {
           alert('Can not retrieve topo json');
         });
@@ -36,6 +38,22 @@ export class AppComponent implements OnInit {
 
 
   constructor(private http: Http) {
+  }
+
+  handleSelected(selected: any) {
+    this.inspector.selected = selected;
+    this.tree.init(this.treeFlat(selected));
+  }
+
+  drill(selected: any) {
+    this.inspector.flush();
+    this.nav.forward(selected);
+    this.playground.setTopo(this.nav.lastConfig());
+  }
+
+  back(current: any) {
+    this.inspector.flush();
+    this.playground.setTopo(current);
   }
 
   treeFlat(data: any): any {

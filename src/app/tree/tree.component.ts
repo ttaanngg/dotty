@@ -172,7 +172,7 @@ export class TreeComponent implements OnInit, AfterViewInit {
       });
     let linksUpdate = linksEnter.merge(links);
 
-    // back to parent element position
+    // update to parent element position
     linksUpdate.transition()
       .duration(DURATION)
       .attr('d', d => diagonal(d, d.parent));
