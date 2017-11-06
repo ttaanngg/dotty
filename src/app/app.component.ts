@@ -3,7 +3,7 @@ import {PlaygroundComponent} from './playground/playground.component';
 import {NavbarComponent} from "./navbar/navbar.component";
 import {Http} from "@angular/http";
 import "rxjs/add/operator/map";
-import {connectData, translate} from "./configs";
+import {connectData, LinkType, NodeType, translate} from "./configs";
 import {TreeComponent} from "./tree/tree.component";
 import {InspectorComponent} from "./inspector/inspector.component";
 
@@ -21,7 +21,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     if (isDevMode()) {
-      alert('Dev Mode');
       this.nav.init(connectData);
     } else {
       let location = window.location;
@@ -31,7 +30,7 @@ export class AppComponent implements OnInit {
         .subscribe((data) => {
           this.nav.init(translate(data.json()));
         }, (err) => {
-          alert('Can not retrieve topo json');
+          alert(`Can not retrieve topo json ${err}`);
         });
     }
   }
@@ -40,20 +39,23 @@ export class AppComponent implements OnInit {
   constructor(private http: Http) {
   }
 
-  handleSelected(selected: any) {
-    this.inspector.selected = selected;
-    this.tree.init(this.treeFlat(selected));
+  select(unit: any) {
+    console.debug(unit);
+    this.inspector.selected = unit;
+    if (!unit.source) {
+      this.tree.init(this.treeFlat(unit));
+    }
   }
 
-  drill(selected: any) {
+  drill(node: NodeType) {
     this.inspector.flush();
-    this.nav.forward(selected);
+    this.nav.forward(node);
     this.playground.setTopo(this.nav.lastConfig());
   }
 
-  back(current: any) {
+  back(node: NodeType) {
     this.inspector.flush();
-    this.playground.setTopo(current);
+    this.playground.setTopo(node);
   }
 
   treeFlat(data: any): any {

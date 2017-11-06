@@ -66,8 +66,7 @@ export class PlaygroundComponent implements OnInit {
       .append('line')
       .classed('playground-line', true)
       .on('click', (d) => {
-        console.debug(d);
-        this.selectedNode = d;
+        self.selected.emit(d);
       });
 
     this.linkTextElements = linkWrappers
@@ -77,8 +76,7 @@ export class PlaygroundComponent implements OnInit {
       .attr('y', d => d.source.y)
       .text(d => d.label)
       .on('click', (d) => {
-        console.debug('click shit:' + d);
-        // this.selectedNode = {'label': 'fuck'};
+        self.selected.emit(d);
       });
 
 
@@ -119,8 +117,8 @@ export class PlaygroundComponent implements OnInit {
 
     this.nodeElements
       .append('text')
-      .text(d => d.id)
-      .style('font-size', (d) => `${(RADIUS - 8) / d.id.length * 3.5}px`)
+      .text(d => d.label)
+      .style('font-size', (d) => `${(RADIUS - 8) / d.label.length * 3.5}px`)
       .attr('dy', '.35em');
 
 
@@ -129,7 +127,6 @@ export class PlaygroundComponent implements OnInit {
       .on('tick', () => this.ticked());
 
     (<d3.ForceLink<any, any>>(simulation.force('linkElements'))).links(topo.children.links);
-
   }
 
 
@@ -144,10 +141,7 @@ export class PlaygroundComponent implements OnInit {
       .attr('x', d => (d.source.x + d.target.x) / 2)
       .attr('y', d => (d.source.y + d.target.y) / 2);
 
-    this.nodeElements
-      .attr('transform', d => {
-        return `translate(${d.x}, ${d.y})`;
-      });
+    this.nodeElements.attr('transform', d => `translate(${d.x}, ${d.y})`);
   }
 
   setTopo(topo: NodeType) {

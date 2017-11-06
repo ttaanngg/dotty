@@ -1,0 +1,17 @@
+<table class="table table-hover table-bordered">
+  <tr>
+    <th>节点ID</th>
+    <td>{{node.id}}</td>
+  </tr>
+  <ng-template [ngIf]="node.attrs">
+    <tr *ngFor="let entry of entries()">
+      <th>{{entry[0]}}</th>
+      <td>{{entry[1]}}</td>
+    </tr>
+  </ng-template>
+</table>
+<button [hidden]="!node.children"
+        class="btn btn-primary float-right"
+        (click)="drill.emit(node)">
+  下钻
+</button>

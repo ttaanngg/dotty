@@ -48,7 +48,6 @@ export class TreeComponent implements OnInit, AfterViewInit {
   }
 
   private initFrame() {
-    console.log("tree frame init");
     if (this.svg) {
       this.svg.remove();
       this.svg = null;
@@ -75,17 +74,14 @@ export class TreeComponent implements OnInit, AfterViewInit {
 
 
   init(data) {
-    console.log("tree init");
     let self = this;
     self.initFrame();
 
     self.originData = data;
     self.treeMap = d3.tree().size([HEIGHT, this.width]);
-    console.debug(self.originData);
     self.root = d3.hierarchy(self.originData, (d: any) => d.children);
     self.root.x0 = HEIGHT / 2;
     self.root.y0 = 0;
-    console.debug(self.root);
     self.root.children.forEach(collapse);
     self.update(self.root);
   }
@@ -160,7 +156,6 @@ export class TreeComponent implements OnInit, AfterViewInit {
 
   private updateLinks(source, linksData) {
     let links = this.svg.selectAll('path.link').data(linksData, d => d.id);
-    console.debug(links);
     let linksEnter = links.enter().insert('path', 'g')
       .attr('class', 'link')
       .attr('stroke', '#ccc')

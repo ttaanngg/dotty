@@ -1,0 +1,20 @@
+<table class="table table-hover table-bordered">
+  <tr>
+    <th>名称</th>
+    <td>{{link.label}}</td>
+  </tr>
+  <tr>
+    <th>被依赖</th>
+    <td>{{link.target.id}}</td>
+  </tr>
+  <tr>
+    <th>依赖源</th>
+    <td>{{link.source.id}}</td>
+  </tr>
+  <ng-template [ngIf]="link.attrs">
+    <tr *ngFor="let entry of entries()">
+      <th>{{entry[0]}}</th>
+      <td>{{entry[1]}}</td>
+    </tr>
+  </ng-template>
+</table>

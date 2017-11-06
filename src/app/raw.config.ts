@@ -6,7 +6,7 @@ export class RawDevice {
   id: string;
   type: string;
   subs?: RawDevice[];
-  attrs?: any;
+  attrs?: {};
 }
 
 export class RawLink {

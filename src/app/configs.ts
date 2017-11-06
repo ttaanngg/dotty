@@ -10,7 +10,6 @@ export class LinkType {
   label: string;
   source: string | number;
   target: string | number;
-  value?: number;
   attrs?: {};
 }
 
@@ -22,69 +21,13 @@ export class NodeType {
   attrs?: {};
 }
 
-export let originalData: Config = {
-  'nodes': [
-    {
-      'id': 'Alice',
-      'label': 'Alice',
-      'group': '#e599f7',
-      'children': {
-        'nodes': [
-          {
-            'id': 'Jack',
-            'label': 'Jack',
-            'group': '#b197fc',
-            'children': {
-              'nodes': [
-                {
-                  'id': 'Betty',
-                  'label': 'Betty',
-                  'group': '#b197fc'
-                },
-                {
-                  'id': 'Tony',
-                  'label': 'Tony',
-                  'group': '#b197fc'
-                }
-              ],
-            }
-          },
-          {
-            'id': 'John',
-            'label': 'John',
-            'group': '#b197fc'
-          }
-        ],
-      }
-    },
-    {
-      'id': 'Bob',
-      'label': 'Bob',
-      'group': '#91a7ff'
-    },
-    {
-      'id': 'Carol',
-      'label': 'Carol',
-      'group': '#e599f7'
-    }
-  ],
-  'links': [
-    {
-      'source': 'Alice',
-      'target': 'Bob',
-      'label': 'friend',
-      'value': 1
-    }
-  ]
-};
-
 function nodeFinder(rawDevice: RawDevice, config: Config, memo: Map<string, Config>, pre: string = null): void {
   let id = pre === null ? rawDevice.id : `${pre}.${rawDevice.id}`;
   let node: NodeType = {
-    'id': id,
-    'label': rawDevice.type,
-    'group': '#91a7ff',
-    'attrs': rawDevice.attrs ? rawDevice : {}
+    id: id,
+    label: rawDevice.type,
+    group: '#91a7ff',
+    attrs: rawDevice.attrs ? rawDevice.attrs : {}
   };
   if (rawDevice.subs != null && rawDevice.subs.length !== 0) {
     node.children = new Config();
@@ -104,9 +47,9 @@ export function translate(raw: RawConfig): NodeType {
   let config = new Config();
   let memo: Map<string, Config> = new Map<string, Config>();
   memo.set('', config);
+
   for (let rawDevice of raw.devices) nodeFinder(rawDevice, config, memo);
 
-  console.debug(memo);
   for (let connection of rawConfig.connections) {
     // console.log(connection);
     let fromSegs = connection.from.split('.');
@@ -120,22 +63,22 @@ export function translate(raw: RawConfig): NodeType {
         let target = concat(path, toSegs[i]);
         if (!memo.get(source).links) memo.get(source).links = [];
         memo.get(source).links.push({
-          'source': source,
-          'target': target,
-          'label': connection.link_type,
-          'attrs': connection.attrs ? connection.attrs : {}
+          source: source,
+          target: target,
+          label: connection.link_type,
+          attrs: connection.attrs ? connection.attrs : {}
         });
         break;
       }
     }
   }
-  console.debug(config);
-  let top: NodeType = {
+  let top = {
     id: 'TOP',
     label: 'TOP',
     children: config,
     group: '#fff'
   };
+  console.debug(top);
   return top;
 }
 
