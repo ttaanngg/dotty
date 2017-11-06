@@ -1,4 +1,6 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Output, ViewChild} from '@angular/core';
+import {LinkTypeComponent} from "./link-type/link-type.component";
+import {NodeTypeComponent} from "./node-type/node-type.component";
 
 @Component({
   selector: 'app-inspector',
@@ -8,6 +10,9 @@ import {Component, EventEmitter, Output} from '@angular/core';
 export class InspectorComponent {
 
   selected: any;
+  @ViewChild(NodeTypeComponent) nodeInspector;
+  @ViewChild(LinkTypeComponent) linkInspector;
+  @Output() drill = new EventEmitter();
 
   constructor() {
   }

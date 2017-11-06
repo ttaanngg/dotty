@@ -12,8 +12,6 @@ circle:hover {
   stroke: red;
 }
 
-
-
 .node circle {
   fill: #fff;
   stroke: steelblue;
@@ -28,4 +26,10 @@ circle:hover {
   fill: none;
   stroke: #ccc;
   stroke-width: 2px;
+}
+
+.selected {
+  stroke: red;
+  stroke-width: 2px;
+  fill: yellow;
 }
