@@ -65,6 +65,13 @@ export class PlaygroundComponent implements OnInit {
     this.linkElements = linkWrappers
       .append('line')
       .classed('playground-line', true)
+      .classed('playground-line-import', (d) => {
+        if (d.attrs['tag']) {
+          return true
+        } else {
+          return false
+        }
+      })
       .on('click', (d) => {
         self.selected.emit(d);
       });

@@ -8,8 +8,8 @@ export class Config {
 
 export class LinkType {
   label: string;
-  source: string | number;
-  target: string | number;
+  source: any;
+  target: any;
   attrs?: {};
 }
 
@@ -43,6 +43,18 @@ function concat(pre, cur): string {
   return pre === '' ? cur : pre + '.' + cur;
 }
 
+function get_source_from_memo(source, memo: Map<string, Config>) {
+  let item = ''
+  memo.forEach((value, key) => {
+    let s = key.split('.')
+    if (s[s.length - 1] === source) {
+      item = key
+    }
+  })
+
+  return item
+}
+
 export function translate(raw: RawConfig): NodeType {
   let config = new Config();
   let memo: Map<string, Config> = new Map<string, Config>();
@@ -50,10 +62,13 @@ export function translate(raw: RawConfig): NodeType {
 
   for (let rawDevice of raw.devices) nodeFinder(rawDevice, config, memo);
 
-  for (let connection of rawConfig.connections) {
-    // console.log(connection);
-    let fromSegs = connection.from.split('.');
-    let toSegs = connection.to.split('.');
+  console.log(memo)
+  for (let connection of raw.connections) {
+    // console.log(connection)
+    let loc_connect_from = get_source_from_memo(connection.from, memo)
+    let loc_connect_to = get_source_from_memo(connection.to, memo)
+    let fromSegs = loc_connect_from.split('.');
+    let toSegs = loc_connect_to.split('.');
     let path = '';
     for (let i = 0; i < fromSegs.length && i < toSegs.length; i++) {
       if (fromSegs[i] === toSegs[i]) {
@@ -83,5 +98,5 @@ export function translate(raw: RawConfig): NodeType {
 }
 
 
-export let connectData = translate(rawConfig);
+// export let connectData = translate(rawConfig);
 
