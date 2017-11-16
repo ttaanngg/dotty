@@ -19,8 +19,12 @@ export class PlaygroundComponent implements OnInit {
   nodeElements: any;
 
   selectedNode: NodeType;
+  ran: number[] = [];
 
   constructor() {
+    for (let i = 0; i < 100; i++) {
+      this.ran[i] = (Math.random() - 0.5)*100
+    }
   }
 
   flush() {
@@ -63,7 +67,7 @@ export class PlaygroundComponent implements OnInit {
 
 
     this.linkElements = linkWrappers
-      .append('line')
+      .append('path')
       .classed('playground-line', true)
       .classed('playground-line-import', (d) => {
         if (d.attrs['tag']) {
@@ -136,19 +140,40 @@ export class PlaygroundComponent implements OnInit {
     (<d3.ForceLink<any, any>>(simulation.force('linkElements'))).links(topo.children.links);
   }
 
+  computeSituation(x1, y1, x2, y2, index) {
+    let sub_x = x2 - x1
+    let sub_y = y2 - y1
+    let k = sub_y / sub_x
+    let k2 = -sub_x / sub_y
+    let base = Math.sqrt(1 / (4 * Math.pow(k2, 2) + 1) * (Math.pow(sub_y, 2) + Math.pow(sub_x, 2)))
+    let x = -base + (x1 + x2) / 2
+    let y = k2 * base + (y1 + y2) / 2
+
+    return `${x}, ${y}`
+  }
 
   ticked() {
+    // this.linkElements
+    //   .attr('x1', d => d.source.x)
+    //   .attr('y1', d => d.source.y)
+    //   .attr('x2', d => d.target.x)
+    //   .attr('y2', d => d.target.y);
+
     this.linkElements
-      .attr('x1', d => d.source.x)
-      .attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x)
-      .attr('y2', d => d.target.y);
+      .attr('d', d => {
+        if(d.index === 0 || d.index === 2){
+          return `M ${d.source.x}, ${d.source.y}
+    Q ${this.computeSituation(d.source.x, d.source.y, d.target.x, d.target.y, d.index)} ${d.target.x}, ${d.target.y}`
+        }
+        return `M ${d.source.x}, ${d.source.y} L ${d.target.x}, ${d.target.y}`
+      });
 
     this.linkTextElements
       .attr('x', d => (d.source.x + d.target.x) / 2)
       .attr('y', d => (d.source.y + d.target.y) / 2);
 
-    this.nodeElements.attr('transform', d => `translate(${d.x}, ${d.y})`);
+    this.nodeElements.attr('transform', d => `
+    translate(${d.x}, ${d.y})`);
   }
 
   setTopo(topo: NodeType) {
