@@ -1,35 +1,44 @@
-#info-panel {
-  //padding-left: 20px;
+/deep/ #playground {
+  text {
+    text-anchor: middle;
+    pointer-events: none;
+
+  }
+
+  .can-drill {
+    stroke-width: 5px;
+    stroke: #dee2e6;
+  }
+
+  .leaf {
+    stroke-width: 2px;
+    stroke: #ffec99;
+  }
+
+  .playground-line {
+    stroke-width: 5px;
+    stroke: #ffb4aa;
+    fill: none;
+  }
+
+  .playground-line-warn {
+    stroke-width: 5px;
+    stroke: red;
+    fill: none;
+  }
+
+  .playground-line.active {
+    stroke: limegreen;
+  }
+
+  .playground-link-text {
+    text-anchor: 'middle';
+    font-size: 11px;
+  }
+
+  circle:hover {
+    stroke-width: 1px;
+    stroke: red;
+  }
 }
 
-#info-panel-heading {
-  padding-top: 10px;
-  //padding-left: 20px;
-}
-
-circle:hover {
-  stroke-width: 1px;
-  stroke: red;
-}
-
-.node circle {
-  fill: #fff;
-  stroke: steelblue;
-  stroke-width: 3px;
-}
-
-.node text {
-  font: 12px sans-serif;
-}
-
-.link path {
-  fill: none;
-  stroke: #ccc;
-  stroke-width: 2px;
-}
-
-.selected {
-  stroke: red;
-  stroke-width: 2px;
-  fill: yellow;
-}

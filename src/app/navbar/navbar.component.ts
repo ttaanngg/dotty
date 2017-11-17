@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {NodeType} from "../configs";
 
 
@@ -10,6 +10,7 @@ import {NodeType} from "../configs";
 export class NavbarComponent {
 
   configs: NodeType[] = [];
+  @Input() title;
   @Output() updateEvent = new EventEmitter();
 
   constructor() {

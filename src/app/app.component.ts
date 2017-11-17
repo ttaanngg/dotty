@@ -3,9 +3,10 @@ import {PlaygroundComponent} from './playground/playground.component';
 import {NavbarComponent} from "./navbar/navbar.component";
 import {Http} from "@angular/http";
 import "rxjs/add/operator/map";
-import {LinkType, NodeType, translate} from "./configs";
+import {NodeType, translate} from "./configs";
 import {TreeComponent} from "./tree/tree.component";
 import {InspectorComponent} from "./inspector/inspector.component";
+import {rawConfig} from "./raw.config";
 
 @Component({
   selector: 'app-root',
@@ -20,9 +21,11 @@ export class AppComponent implements OnInit {
   @ViewChild(InspectorComponent) inspector: InspectorComponent;
 
   ngOnInit() {
-    // if (isDevMode()) {
-    //   this.nav.init(connectData);
-    // } else {
+    if (isDevMode()) {
+      let data = translate(rawConfig);
+      console.debug(data);
+      this.nav.init(data);
+    } else {
       let location = window.location;
       let topoID = location.pathname.split('/').pop();
       console.log(topoID)
@@ -35,7 +38,7 @@ export class AppComponent implements OnInit {
         }, (err) => {
           alert(`Can not retrieve topo json ${err}`);
         });
-    // }
+    }
   }
 
 

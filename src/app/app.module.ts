@@ -9,6 +9,8 @@ import {TreeComponent} from './tree/tree.component';
 import {InspectorComponent} from './inspector/inspector.component';
 import {LinkTypeComponent} from './inspector/link-type/link-type.component';
 import {NodeTypeComponent} from './inspector/node-type/node-type.component';
+import { TracerComponent } from './tracer/tracer.component';
+import {PopoverModule} from "ng2-popover";
 
 @NgModule({
   declarations: [
@@ -18,10 +20,12 @@ import {NodeTypeComponent} from './inspector/node-type/node-type.component';
     TreeComponent,
     InspectorComponent,
     LinkTypeComponent,
-    NodeTypeComponent
+    NodeTypeComponent,
+    TracerComponent
   ],
   imports: [
     BrowserModule,
+    PopoverModule,
     HttpModule,
   ],
   providers: [],

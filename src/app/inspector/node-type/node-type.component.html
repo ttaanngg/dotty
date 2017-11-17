@@ -1,7 +1,15 @@
-<table class="table table-hover table-bordered">
+<table class="table table-striped table-sm">
   <tr>
-    <th>节点ID</th>
+    <th>id</th>
     <td>{{node.id}}</td>
+  </tr>
+  <tr>
+    <th>type</th>
+    <td>{{node.type}}</td>
+  </tr>
+  <tr>
+    <th>name</th>
+    <td>{{node.label}}</td>
   </tr>
   <ng-template [ngIf]="node.attrs">
     <tr *ngFor="let entry of entries()">

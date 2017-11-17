@@ -52,7 +52,7 @@ export class TreeComponent implements OnInit, AfterViewInit {
       this.svg.remove();
       this.svg = null;
     }
-    this.width = $('#standard-width').width() - MARGIN.left - MARGIN.right;
+    this.width = $('#app-tree-wrapper').width() - MARGIN.left - MARGIN.right;
     this.height = HEIGHT - MARGIN.bottom - MARGIN.top;
     let self = this;
     this.svg =

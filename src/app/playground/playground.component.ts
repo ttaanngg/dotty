@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import * as d3 from 'd3';
 import * as $ from 'jquery';
 import {NodeType} from "../configs";
@@ -9,7 +9,6 @@ import {NodeType} from "../configs";
   styleUrls: ['./playground.component.scss']
 })
 export class PlaygroundComponent implements OnInit {
-
   @Output() selected = new EventEmitter();
   @Output() drill = new EventEmitter();
 
@@ -23,7 +22,7 @@ export class PlaygroundComponent implements OnInit {
 
   constructor() {
     for (let i = 0; i < 100; i++) {
-      this.ran[i] = (Math.random() - 0.5)*100
+      this.ran[i] = (Math.random() - 0.5) * 100;
     }
   }
 
@@ -51,7 +50,7 @@ export class PlaygroundComponent implements OnInit {
     let simulation =
       d3.forceSimulation(topo.children.nodes)
         .force('linkElements', d3.forceLink().id((d: any) => d.id).distance(5 * RADIUS))
-        .force("collide", d3.forceCollide(RADIUS * 2).iterations(16))
+        .force("collide", d3.forceCollide(RADIUS * 2).iterations(24))
         .force('charge', d3.forceManyBody())
         .force('center', d3.forceCenter(WIDTH / 2, HEIGHT / 2))
         .force('x', d3.forceX(WIDTH / 2).strength(0.0015))
@@ -69,13 +68,8 @@ export class PlaygroundComponent implements OnInit {
     this.linkElements = linkWrappers
       .append('path')
       .classed('playground-line', true)
-      .classed('playground-line-import', (d) => {
-        if (d.attrs['tag']) {
-          return true
-        } else {
-          return false
-        }
-      })
+      .classed('playground-line-warn', d => !!d.attrs['tag'])
+      .classed('active', d => !!d.attrs['selected'])
       .on('click', (d) => {
         self.selected.emit(d);
       });
@@ -141,29 +135,24 @@ export class PlaygroundComponent implements OnInit {
   }
 
   computeSituation(x1, y1, x2, y2, index) {
-    let sub_x = x2 - x1
-    let sub_y = y2 - y1
-    let k = sub_y / sub_x
-    let k2 = -sub_x / sub_y
-    let base = Math.sqrt(1 / (4 * Math.pow(k2, 2) + 1) * (Math.pow(sub_y, 2) + Math.pow(sub_x, 2)))
-    let x = -base + (x1 + x2) / 2
-    let y = k2 * base + (y1 + y2) / 2
+    let subX = x2 - x1;
+    let subY = y2 - y1;
+    let k = subY / subX;
+    let k2 = -subX / subY;
+    let base = Math.sqrt(1 / (4 * Math.pow(k2, 2) + 1) * (Math.pow(subY, 2) + Math.pow(subX, 2)));
+    let x = -base + (x1 + x2) / 2;
+    let y = k2 * base + (y1 + y2) / 2;
 
     return `${x}, ${y}`
   }
 
   ticked() {
-    // this.linkElements
-    //   .attr('x1', d => d.source.x)
-    //   .attr('y1', d => d.source.y)
-    //   .attr('x2', d => d.target.x)
-    //   .attr('y2', d => d.target.y);
-
+    let self = this;
     this.linkElements
       .attr('d', d => {
-        if(d.index === 0 || d.index === 2){
-          return `M ${d.source.x}, ${d.source.y}
-    Q ${this.computeSituation(d.source.x, d.source.y, d.target.x, d.target.y, d.index)} ${d.target.x}, ${d.target.y}`
+        let qPos = self.computeSituation(d.source.x, d.source.y, d.target.x, d.target.y, d.index);
+        if (d.index === 0 || d.index === 2) {
+          return `M ${d.source.x}, ${d.source.y} Q ${qPos} ${d.target.x}, ${d.target.y}`
         }
         return `M ${d.source.x}, ${d.source.y} L ${d.target.x}, ${d.target.y}`
       });

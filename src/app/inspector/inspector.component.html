@@ -1,9 +1,14 @@
-<h4 id="info-panel-heading">配置检查</h4>
-<hr>
+<div class="card">
+  <h6 class="card-header">
+    配置检查
+  </h6>
+  <div class="card-body">
+    <app-link-type [link]="selected" *ngIf="selected && isLinkType()"></app-link-type>
+    <app-node-type (drill)="drill.emit($event)" [node]="selected" *ngIf="selected && isNodeType()"></app-node-type>
 
-<app-link-type [link]="selected" *ngIf="selected && isLinkType()"></app-link-type>
-<app-node-type (drill)="drill.emit($event)" [node]="selected" *ngIf="selected && isNodeType()"></app-node-type>
-
-<div *ngIf="!this.selected">
-  <p>选中节点来查看属性</p>
+    <div id="empty-notify" *ngIf="!this.selected">
+      <p>选中节点来查看属性</p>
+    </div>
+  </div>
 </div>
+
