@@ -234,7 +234,10 @@ export let rawConfig: RawConfig = {
     {
       "from": "CX311_2X",
       "to": "CX311_3X",
-      "link_type": "stack"
+      "link_type": "stack",
+      "attrs": {
+        selected: true
+      }
     },
     {
       "from": "CX311_2X",

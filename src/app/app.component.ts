@@ -3,9 +3,10 @@ import {PlaygroundComponent} from './playground/playground.component';
 import {NavbarComponent} from "./navbar/navbar.component";
 import {Http} from "@angular/http";
 import "rxjs/add/operator/map";
-import {connectData, LinkType, NodeType, translate} from "./configs";
+import {NodeType, translate} from "./configs";
 import {TreeComponent} from "./tree/tree.component";
 import {InspectorComponent} from "./inspector/inspector.component";
+import {rawConfig} from "./raw.config.new";
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     if (isDevMode()) {
-      this.nav.init(connectData);
+      this.nav.init(translate(rawConfig));
     } else {
       let location = window.location;
       let topoID = location.pathname.split('/').pop();

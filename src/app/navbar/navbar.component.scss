@@ -8,3 +8,8 @@
 #title {
   margin-left: 10px;
 }
+
+.nav-item :after{
+  content: '>';
+  margin-right: 3px;
+}

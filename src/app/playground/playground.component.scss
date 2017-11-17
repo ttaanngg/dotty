@@ -18,6 +18,11 @@
   .playground-line {
     stroke-width: 5px;
     stroke: #ffb4aa;
+    fill: none;
+  }
+
+  .playground-line.active {
+    stroke: limegreen;
   }
 
   .playground-link-text {
