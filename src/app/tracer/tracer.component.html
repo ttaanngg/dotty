@@ -1,3 +1,15 @@
 <div id="tracer-wrapper">
-  <svg id="tracer"></svg>
+  <div class="row routes" *ngFor="let routes of routesSet; let i = index">
+    <div class="route" [class.tag]="route['tag']" *ngFor="let route of routes; let j = index">
+      <button class="btn btn-outline-dark node" *ngIf="j == 0">{{ route.device_name_a }}</button>
+      <span [popoverOnHover]="true"
+            [popover]="mapper[i+'_'+j]"
+            popoverPlacement="top"
+            class="link btn"
+            [class.tag]="route.tag">
+        <--->
+      </span>
+      <button class="btn btn-outline-dark node">{{route.device_name_b}}</button>
+    </div>
+  </div>
 </div>

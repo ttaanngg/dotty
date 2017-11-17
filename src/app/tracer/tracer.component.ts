@@ -1,46 +1,43 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
-import * as d3 from 'd3';
-import * as $ from 'jquery';
-
-const HEIGHT = 400;
-const DURATION = 1000;
-const MARGIN = {top: 5, right: 100, bottom: 5, left: 90};
+import {Component, isDevMode, OnInit} from '@angular/core';
+import {Http} from "@angular/http";
+import {routesSet} from "../routes";
 
 @Component({
   selector: 'app-tracer',
   templateUrl: './tracer.component.html',
   styleUrls: ['./tracer.component.scss']
 })
-export class TracerComponent implements OnInit, AfterViewInit {
-  svg: any;
-  width: number;
-  height: number;
+export class TracerComponent implements OnInit {
+  routesSet: any[];
+  mapper: {};
 
-  private initFrame() {
-    if (this.svg) {
-      this.svg.remove();
-      this.svg = null;
+  constructor(private http: Http) {
+  }
+
+  init(data) {
+    this.routesSet = data;
+    this.mapper = new Map<String, String>();
+    for (let i in this.routesSet) {
+      for (let j in this.routesSet[i]) {
+        let item = this.routesSet[i][j];
+        this.mapper[i + '_' + j] = item.device_id_a + '<--->' + item.device_id_b
+      }
     }
-    this.width = $('#tracer-wrapper').width() - MARGIN.left - MARGIN.right;
-    this.height = HEIGHT - MARGIN.top - MARGIN.bottom;
-    let self = this;
-    self.svg = d3.select('#tracer')
-      .attr('width', self.width + MARGIN.left + MARGIN.right)
-      .attr('height', self.height + MARGIN.top + MARGIN.bottom)
-      .append('g')
-      .attr('transform', `translate(${MARGIN.left}, ${MARGIN.right})`);
-  }
-
-  ngAfterViewInit() {
-    this.initFrame();
-  }
-
-  constructor() {
   }
 
   ngOnInit() {
-
+    if (isDevMode()) {
+      this.init(routesSet);
+    } else {
+      let location = window.location;
+      let topoID = location.pathname.split('/').pop();
+      let retrievePath = `//${location.host}/routes/${topoID}`;
+      this.http.get(retrievePath)
+        .subscribe((data) => {
+          this.init(data.json());
+        }, (err) => {
+          alert(`Can not retrieve routes json ${err}`);
+        });
+    }
   }
-
-
 }

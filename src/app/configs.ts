@@ -2,8 +2,8 @@ import {RawConfig, RawDevice} from "./raw.config";
 import {SimulationLinkDatum, SimulationNodeDatum} from "d3-force";
 
 export class Config {
-  nodes: NodeType[];
-  links?: LinkType[];
+  nodes: NodeType[] = [];
+  links?: LinkType[] = [];
 }
 
 export class NodeType implements SimulationNodeDatum {
@@ -18,13 +18,14 @@ export class NodeType implements SimulationNodeDatum {
   id: string | number;
   label: string;
   group: string;
+  type: string;
   children?: Config;
   attrs?: {};
 }
 
 export class LinkType implements SimulationLinkDatum<NodeType> {
-  source: string | number | NodeType;
-  target: string | number | NodeType;
+  source: any;
+  target: any;
   label: string;
   attrs?: {};
 }
@@ -34,7 +35,8 @@ function nodeFinder(rawDevice: RawDevice, config: Config, memo: Map<string, Conf
   let id = pre === null ? rawDevice.id : `${pre}.${rawDevice.id}`;
   let node: NodeType = {
     id: id,
-    label: rawDevice.type,
+    type: rawDevice.type,
+    label: rawDevice.name,
     group: '#91a7ff',
     attrs: rawDevice.attrs ? rawDevice.attrs : {}
   };
@@ -100,6 +102,7 @@ export function translate(raw: RawConfig): NodeType {
     id: 'TOP',
     label: 'TOP',
     children: config,
+    type: 'NULL',
     group: '#fff'
   };
   console.debug(top);

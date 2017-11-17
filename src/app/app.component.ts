@@ -22,7 +22,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     if (isDevMode()) {
-      this.nav.init(translate(rawConfig));
+      let data = translate(rawConfig);
+      console.debug(data);
+      this.nav.init(data);
     } else {
       let location = window.location;
       let topoID = location.pathname.split('/').pop();

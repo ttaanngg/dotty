@@ -50,7 +50,7 @@ export class PlaygroundComponent implements OnInit {
     let simulation =
       d3.forceSimulation(topo.children.nodes)
         .force('linkElements', d3.forceLink().id((d: any) => d.id).distance(5 * RADIUS))
-        .force("collide", d3.forceCollide(RADIUS * 2).iterations(8))
+        .force("collide", d3.forceCollide(RADIUS * 2).iterations(24))
         .force('charge', d3.forceManyBody())
         .force('center', d3.forceCenter(WIDTH / 2, HEIGHT / 2))
         .force('x', d3.forceX(WIDTH / 2).strength(0.0015))
@@ -68,7 +68,7 @@ export class PlaygroundComponent implements OnInit {
     this.linkElements = linkWrappers
       .append('path')
       .classed('playground-line', true)
-      .classed('playground-line-import', d => !!d.attrs['tag'])
+      .classed('playground-line-warn', d => !!d.attrs['tag'])
       .classed('active', d => !!d.attrs['selected'])
       .on('click', (d) => {
         self.selected.emit(d);

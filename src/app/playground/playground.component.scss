@@ -21,6 +21,12 @@
     fill: none;
   }
 
+  .playground-line-warn {
+    stroke-width: 5px;
+    stroke: red;
+    fill: none;
+  }
+
   .playground-line.active {
     stroke: limegreen;
   }

@@ -10,6 +10,7 @@ import {InspectorComponent} from './inspector/inspector.component';
 import {LinkTypeComponent} from './inspector/link-type/link-type.component';
 import {NodeTypeComponent} from './inspector/node-type/node-type.component';
 import { TracerComponent } from './tracer/tracer.component';
+import {PopoverModule} from "ng2-popover";
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { TracerComponent } from './tracer/tracer.component';
   ],
   imports: [
     BrowserModule,
+    PopoverModule,
     HttpModule,
   ],
   providers: [],

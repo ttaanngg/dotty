@@ -6,7 +6,7 @@
     <app-link-type [link]="selected" *ngIf="selected && isLinkType()"></app-link-type>
     <app-node-type (drill)="drill.emit($event)" [node]="selected" *ngIf="selected && isNodeType()"></app-node-type>
 
-    <div *ngIf="!this.selected">
+    <div id="empty-notify" *ngIf="!this.selected">
       <p>选中节点来查看属性</p>
     </div>
   </div>

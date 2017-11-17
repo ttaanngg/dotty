@@ -1,4 +1,33 @@
-#tracer-wrapper {
-  border-radius: 5px;
-  border: 1px solid black;
+.route {
+  padding-top: 3px;
+  padding-left: 5px;
+}
+
+.link {
+  font-weight: bold;
+}
+
+.link.tag {
+  color: red;
+}
+
+.link:not(.tag) {
+  color: green;
+}
+
+.route {
+  .node {
+    font-weight: bolder;
+    padding: 3px 5px;
+  }
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.routes:not(:last-of-type) {
+  border-bottom: dashed thin darkgray;
+}
+
+#tracer-wrapper{
+  padding-right: 20px;
 }
