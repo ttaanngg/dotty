@@ -5,6 +5,7 @@
     "baseUrl": "./",
     "module": "commonjs",
     "target": "es5",
+    "noStrictGenericChecks": true,
     "types": [
       "jasmine",
       "node"

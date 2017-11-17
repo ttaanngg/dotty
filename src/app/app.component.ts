@@ -6,7 +6,7 @@ import "rxjs/add/operator/map";
 import {NodeType, translate} from "./configs";
 import {TreeComponent} from "./tree/tree.component";
 import {InspectorComponent} from "./inspector/inspector.component";
-import {rawConfig} from "./raw.config.new";
+import {rawConfig} from "./raw.config";
 
 @Component({
   selector: 'app-root',

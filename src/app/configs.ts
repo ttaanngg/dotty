@@ -1,24 +1,34 @@
 import {RawConfig, RawDevice} from "./raw.config";
+import {SimulationLinkDatum, SimulationNodeDatum} from "d3-force";
 
 export class Config {
   nodes: NodeType[];
   links?: LinkType[];
 }
 
-export class LinkType {
-  label: string;
-  source: any;
-  target: any;
-  attrs?: {};
-}
+export class NodeType implements SimulationNodeDatum {
+  index?: number;
+  x?: number;
+  y?: number;
+  vx?: number;
+  vy?: number;
+  fx?: number | null;
+  fy?: number | null;
 
-export class NodeType {
   id: string | number;
   label: string;
   group: string;
   children?: Config;
   attrs?: {};
 }
+
+export class LinkType implements SimulationLinkDatum<NodeType> {
+  source: string | number | NodeType;
+  target: string | number | NodeType;
+  label: string;
+  attrs?: {};
+}
+
 
 function nodeFinder(rawDevice: RawDevice, config: Config, memo: Map<string, Config>, pre: string = null): void {
   let id = pre === null ? rawDevice.id : `${pre}.${rawDevice.id}`;
