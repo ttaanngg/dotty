@@ -1,17 +1,17 @@
 <app-navbar #nav (updateEvent)="back($event)" [title]="title"></app-navbar>
 <div id="main-body" class="container-fluid">
   <div class="row">
-    <app-inspector #inspector id="info-panel" class="col-sm-3"
+    <app-inspector #inspector id="info-panel" class="col-sm-4"
                    (drill)="drill($event)">
     </app-inspector>
-    <app-playground #playground class="col-sm-9"
+    <app-playground #playground class="col-sm-8"
                     (selected)="select($event)"
                     (drill)="drill($event)">
     </app-playground>
   </div>
   <hr id="standard-width">
   <div class="row">
-    <app-tree #tree class="col-sm-6"></app-tree>
-    <app-tracer #tracer class="col-sm-6"></app-tracer>
+    <app-tree #tree class="col-sm-4"></app-tree>
+    <app-tracer #tracer class="col-sm-8"></app-tracer>
   </div>
 </div>

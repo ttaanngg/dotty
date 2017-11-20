@@ -13,7 +13,10 @@ export class LinkTypeComponent implements OnInit {
 
   entries(): string[][] {
     return Object.keys(this.link.attrs)
-      .map((k) => [k, this.link.attrs[k]]);
+      .map((k) => [k, this.link.attrs[k]])
+      .filter((k) => k[0] !== 'selected')
+      .filter((k) => k[0] !== 'device_id_a')
+      .filter((k) => k[0] !== 'device_id_b');
   }
 
 

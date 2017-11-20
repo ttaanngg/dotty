@@ -20,7 +20,7 @@ export class TracerComponent implements OnInit {
     for (let i in this.routesSet) {
       for (let j in this.routesSet[i]) {
         let item = this.routesSet[i][j];
-        this.mapper[i + '_' + j] = item.device_id_a + '<--->' + item.device_id_b
+        this.mapper[i + '_' + j] = item.port_name_a + '<--->' + item.port_name_b
       }
     }
   }
@@ -31,6 +31,7 @@ export class TracerComponent implements OnInit {
     } else {
       let location = window.location;
       let topoID = location.pathname.split('/').pop();
+      // let retrievePath = `http://localhost:5000/routes/${topoID}`;
       let retrievePath = `//${location.host}/routes/${topoID}`;
       this.http.get(retrievePath)
         .subscribe((data) => {
