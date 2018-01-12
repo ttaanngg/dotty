@@ -1,4 +1,5 @@
 /deep/ #playground {
+
   text {
     text-anchor: middle;
     pointer-events: none;
@@ -11,24 +12,25 @@
   }
 
   .leaf {
-    stroke-width: 2px;
+    stroke-width: 1px;
     stroke: #ffec99;
   }
 
   .playground-line {
-    stroke-width: 5px;
-    stroke: #ffb4aa;
+    stroke-width: 2px;
+    stroke: black;
     fill: none;
   }
 
-  .playground-line-warn {
-    stroke-width: 5px;
-    stroke: red;
-    fill: none;
+  #arrow {
+    path {
+      fill: black;
+    }
   }
-
-  .playground-line.active {
-    stroke: limegreen;
+  #r_arrow {
+    path {
+      fill: black;
+    }
   }
 
   .playground-link-text {
@@ -38,7 +40,7 @@
 
   circle:hover {
     stroke-width: 1px;
-    stroke: red;
+    stroke: black;
   }
 }
 

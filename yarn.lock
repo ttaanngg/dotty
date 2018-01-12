@@ -361,6 +361,10 @@
   version "3.2.16"
   resolved "http://registry.npm.taobao.org/@types/jquery/download/@types/jquery-3.2.16.tgz#04419c404a3194350e7d3f339a90e72c88db3111"
 
+"@types/json5@^0.0.29":
+  version "0.0.29"
+  resolved "http://registry.npm.taobao.org/@types/json5/download/@types/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
+
 "@types/node@^6.0.46", "@types/node@~6.0.60":
   version "6.0.92"
   resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-6.0.92.tgz#e7f721ae282772e12ba2579968c00d9cce422c5d"

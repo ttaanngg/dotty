@@ -13,7 +13,6 @@ export class PlaygroundComponent implements OnInit {
   @Output() drill = new EventEmitter();
 
   svg: any;
-  linkTextElements: any;
   linkElements: any;
   nodeElements: any;
 
@@ -36,10 +35,10 @@ export class PlaygroundComponent implements OnInit {
 
   draw(topo: NodeType) {
     let wrapper = $('#playground-wrapper');
-    let sibling = $('#info-panel');
+    // let sibling = $('#info-panel');
     let WIDTH = wrapper.width();
-    let HEIGHT = Math.max(sibling.height(), 500);
-    let RADIUS = 40;
+    let HEIGHT = 500;
+    let RADIUS = 15;
     let self = this;
 
     self.svg = d3.select('#playground')
@@ -66,20 +65,10 @@ export class PlaygroundComponent implements OnInit {
 
 
     this.linkElements = linkWrappers
-      .append('path')
+      .append('line')
       .classed('playground-line', true)
-      .classed('playground-line-warn', d => !!d.attrs['tag'])
-      .classed('active', d => !!d.attrs['selected'])
-      .on('click', (d) => {
-        self.selected.emit(d);
-      });
-
-    this.linkTextElements = linkWrappers
-      .append('text')
-      .classed('playground-link-text', true)
-      .attr('x', d => d.source.x)
-      .attr('y', d => d.source.y)
-      .text(d => d.label)
+      .attr('marker-start', d => d.mutual ? 'url(#r_arrow)' : '')
+      .attr('marker-end', 'url(#arrow)')
       .on('click', (d) => {
         self.selected.emit(d);
       });
@@ -134,34 +123,15 @@ export class PlaygroundComponent implements OnInit {
     (<d3.ForceLink<any, any>>(simulation.force('linkElements'))).links(topo.children.links);
   }
 
-  computeSituation(x1, y1, x2, y2, index) {
-    let subX = x2 - x1;
-    let subY = y2 - y1;
-    let k = subY / subX;
-    let k2 = -subX / subY;
-    let base = Math.sqrt(1 / (4 * Math.pow(k2, 2) + 1) * (Math.pow(subY, 2) + Math.pow(subX, 2)));
-    let x = -base + (x1 + x2) / 2;
-    let y = k2 * base + (y1 + y2) / 2;
-
-    return `${x}, ${y}`
-  }
-
   ticked() {
     let self = this;
-    this.linkElements
-      .attr('d', d => {
-        let qPos = self.computeSituation(d.source.x, d.source.y, d.target.x, d.target.y, d.index);
-        if (d.index === 0 || d.index === 2) {
-          return `M ${d.source.x}, ${d.source.y} Q ${qPos} ${d.target.x}, ${d.target.y}`
-        }
-        return `M ${d.source.x}, ${d.source.y} L ${d.target.x}, ${d.target.y}`
-      });
+    self.linkElements
+      .attr('x1', d => d.source.x)
+      .attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x)
+      .attr('y2', d => d.target.y);
 
-    this.linkTextElements
-      .attr('x', d => (d.source.x + d.target.x) / 2)
-      .attr('y', d => (d.source.y + d.target.y) / 2);
-
-    this.nodeElements.attr('transform', d => `
+    self.nodeElements.attr('transform', d => `
     translate(${d.x}, ${d.y})`);
   }
 

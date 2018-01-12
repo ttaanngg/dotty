@@ -1,4 +1,4 @@
-import {RawConfig, RawDevice} from "./raw.config";
+import {RawConfig} from "./raw.config";
 import {SimulationLinkDatum, SimulationNodeDatum} from "d3-force";
 
 export class Config {
@@ -27,85 +27,72 @@ export class LinkType implements SimulationLinkDatum<NodeType> {
   source: any;
   target: any;
   label: string;
+  mutual = false;
   attrs?: {};
 }
 
 
-function nodeFinder(rawDevice: RawDevice, config: Config, memo: Map<string, Config>, pre: string = null): void {
-  let id = pre === null ? rawDevice.id : `${pre}.${rawDevice.id}`;
-  let node: NodeType = {
-    id: id,
-    type: rawDevice.type,
-    label: rawDevice.name,
-    group: '#91a7ff',
-    attrs: rawDevice.attrs ? rawDevice.attrs : {}
-  };
-  if (rawDevice.subs != null && rawDevice.subs.length !== 0) {
-    node.children = new Config();
-    for (let sub of rawDevice.subs) {
-      nodeFinder(sub, node.children, memo, id);
-    }
-  }
-  memo.set(id, config);
-  config.nodes.push(node);
-}
+export function translate(rawConfig: RawConfig): NodeType {
 
-function concat(pre, cur): string {
-  return pre === '' ? cur : pre + '.' + cur;
-}
-
-function get_source_from_memo(source, memo: Map<string, Config>) {
-  let item = '';
-  memo.forEach((value, key) => {
-    let s = key.split('.');
-    if (s[s.length - 1] === source) {
-      item = key
-    }
-  });
-
-  return item
-}
-
-export function translate(raw: RawConfig): NodeType {
   let config = new Config();
-  let memo: Map<string, Config> = new Map<string, Config>();
-  memo.set('', config);
+  let top = new NodeType();
 
-  for (let rawDevice of raw.devices) nodeFinder(rawDevice, config, memo);
+  let defaultColor = rawConfig.labels['default'];
+  let validators = [];
+  console.log(rawConfig.labels)
+  for (let key in rawConfig.labels) {
+    let value = rawConfig.labels[key]
+    console.log([key,value])
 
-  console.log(memo);
-  for (let connection of raw.connections) {
-    // console.log(connection)
-    let loc_connect_from = get_source_from_memo(connection.from, memo);
-    let loc_connect_to = get_source_from_memo(connection.to, memo);
-    let fromSegs = loc_connect_from.split('.');
-    let toSegs = loc_connect_to.split('.');
-    let path = '';
-    for (let i = 0; i < fromSegs.length && i < toSegs.length; i++) {
-      if (fromSegs[i] === toSegs[i]) {
-        path = concat(path, fromSegs[i]);
-      } else {
-        let source = concat(path, fromSegs[i]);
-        let target = concat(path, toSegs[i]);
-        if (!memo.get(source).links) memo.get(source).links = [];
-        memo.get(source).links.push({
-          source: source,
-          target: target,
-          label: connection.link_type,
-          attrs: connection.attrs ? connection.attrs : {}
-        });
+    if (key === 'default') continue;
+    let segs = key.split('-');
+    let left = +segs[0];
+    let right = +segs[1];
+    validators.push(function (a) {
+      if (left <= a && a <= right) return value;
+      return '';
+    })
+  }
+
+  for (let i = 0; i < rawConfig.matrix.length; i++) {
+    let node = new NodeType();
+    node.group = '';
+    node.id = '' + i;
+    node.label = '' + i;
+    for (let validator of validators) {
+      let group = validator(i);
+      if (group !== '') {
+        node.group = group;
         break;
       }
     }
+    if (node.group === '') node.group = defaultColor;
+    config.nodes.push(node);
   }
-  let top = {
-    id: 'TOP',
-    label: 'TOP',
-    children: config,
-    type: 'NULL',
-    group: '#fff'
-  };
-  console.debug(top);
+  let memo = new Map<string, LinkType>();
+  for (let i = 0; i < rawConfig.matrix.length; i++) {
+    for (let j = 0; j < rawConfig.matrix[i].length; j++) {
+      if (i === j) continue;
+      let key = '' + i + '-' + j;
+      let reverse_key = '' + j + '-' + i;
+      if (rawConfig.matrix[i][j] === 1) {
+        if (memo.has(reverse_key)) {
+          memo.get(reverse_key).mutual = true;
+        } else {
+          let link = new LinkType();
+          link.source = '' + i;
+          link.target = '' + j;
+          config.links.push(link);
+          memo.set(key, link);
+        }
+      }
+    }
+  }
+  top.id = 'TOP';
+  top.label = 'TOP';
+  top.children = config;
+  top.type = 'NULL';
+  top.group = '#fff';
   return top;
 }
 
